@@ -1,0 +1,39 @@
+apiVersion: apps/v1 # api server 版本
+kind: Deployment  # 资源对象类型
+metadata:
+  labels: # 资源对象标签
+    app: java-demo  
+  name: java-demo # 应用名称
+  namespace: default # 所属命名空间
+spec:
+  replicas: 2  # pod数量
+  selector: 
+    matchLabels:
+      app: java-demo  #对应服务中Selector的值需要与其一致，才可以通过服务公开此应用。
+  strategy: # 部署更新策略
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template: # pod 模板
+    metadata:
+      labels:
+        app: java-demo
+    spec:
+      containers:  
+        # 容器镜像
+        - image: 'registry.cn-hangzhou.aliyuncs.com/mir355/java-demo:1.0'
+          imagePullPolicy: IfNotPresent
+          name: java-demo # 容器名称
+          ports:
+            - containerPort: 80 # 当前容器暴露的端口
+              name: java-demo    #  ports资源对象 名称
+              protocol: TCP    # 端口协议
+          resources:
+            limits:   # 容器最大资源限制
+              cpu: '1'
+              memory: 1Gi
+            requests: # 容器初始资源需求
+              cpu: 250m
+              memory: 512Mi
+

@@ -22,12 +22,12 @@ jobs:
         kubectl config set-credentials default --token=${{ secrets.k8s_token }} 
         kubectl config set-context tf-system --cluster=tf-cluster --user=default
         kubectl config use-context tf-system
-        bash bin/build ${{ secrets.acr_token }} ${{ github.run_id }}
+        bash bin/build ${{ secrets.acr_token }} ${github.run_id:0:6}
 
     - name: Kube Deployment Update Image #通知k8s 更新镜像版本并产生一个记录
       run: |
         # 先更新镜像
-        result=`kubectl set image deployment java-demo *=registry.cn-hangzhou.aliyuncs.com/mir355/java-demo:${{ github.run_id }} -n default`
+        result=`kubectl set image deployment java-demo *=registry.cn-hangzhou.aliyuncs.com/mir355/java-demo:${github.run_id:0:6} -n default`
         # 检测镜像是否更新成功
         if [[ "$(echo $result | grep updated)" != ""  ]]; then
           # 镜像地址更新了，会自动重新部署
