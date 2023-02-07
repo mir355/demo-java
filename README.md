@@ -2,7 +2,7 @@
 
 * complie
     docker build
-    
+
 * artifacts
     ali docker images
     registry.cn-hangzhou.aliyuncs.com
@@ -11,10 +11,11 @@
     $ docker login --username=mir***@163.com registry.cn-hangzhou.aliyuncs.com
     $ docker tag [ImageId] registry.cn-hangzhou.aliyuncs.com/mir355/java-demo:[镜像版本号]
     $ docker push registry.cn-hangzhou.aliyuncs.com/mir355/java-demo:[镜像版本号]
-
-    1qaz2wsx
-
+    ali_token
+    
 * k8s deploy
+    k8s_server
+    k8s_token
 
 [![BoltOps Badge](https://img.boltops.com/boltops/badges/boltops-badge.png)](https://www.boltops.com)
 

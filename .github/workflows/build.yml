@@ -22,22 +22,25 @@ jobs:
         kubectl config set-credentials default --token=${{ secrets.k8s_token }} 
         kubectl config set-context tf-system --cluster=tf-cluster --user=default
         kubectl config use-context tf-system
-        tag=`echo ${{ github.run_id }}|cut -c1-8`
-        bash bin/build ${{ secrets.acr_token }} $tag
+        bash bin/build ${{ secrets.acr_token }} ${{ github.run_id }}
 
     - name: Kube Deployment Update Image #通知k8s 更新镜像版本并产生一个记录
       run: |
-        # 先更新镜像
-        tag=`echo ${{ github.run_id }}|cut -c1-8`
-        result=`kubectl set image deployment java-demo *=registry.cn-hangzhou.aliyuncs.com/mir355/java-demo:$tag -n default`
-        # 检测镜像是否更新成功
-        if [[ "$(echo $result | grep updated)" != ""  ]]; then
-          # 镜像地址更新了，会自动重新部署
-            echo 'UPDATED'
-        else
-          kubectl apply -f java-demo-svc.yaml
-          # 镜像地址与之前相同，需要触发重新部署
-          kubectl apply -f java-demo.yaml
-          echo 'NOT UPDATE'
-          kubectl rollout restart deployment java-demo -n default
-        fi
+        sed -i "s#mir355/java-demo.*#mir355/java-demo:${{ github.run_id }}#" java-demo.yaml
+        kubectl apply -f java-demo-svc.yaml
+        # 镜像地址与之前相同，需要触发重新部署
+        kubectl apply -f java-demo.yaml
+
+        # # 先更新镜像
+        # result=`kubectl set image deployment java-demo *=registry.cn-hangzhou.aliyuncs.com/mir355/java-demo:${{ github.run_id }} -n default`
+        # # 检测镜像是否更新成功
+        # if [[ "$(echo $result | grep updated)" != ""  ]]; then
+        #   # 镜像地址更新了，会自动重新部署
+        #     echo 'UPDATED'
+        # else
+        #   kubectl apply -f java-demo-svc.yaml
+        #   # 镜像地址与之前相同，需要触发重新部署
+        #   kubectl apply -f java-demo.yaml
+        #   echo 'NOT UPDATE'
+        #   kubectl rollout restart deployment java-demo -n default
+        # fi
