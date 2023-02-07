@@ -46,22 +46,22 @@ spec:
               cpu: 250m
               memory: 512Mi
           volumeMounts:
-          # 挂在skywalking-agent
-          - name: skywalking-agent
-            mountPath: /skywalking
+            # 挂在skywalking-agent
+            - name: skywalking-agent
+              mountPath: /skywalking
           env:
-          # skywalking 环境变量
-          - name: JAVA_TOOL_OPTIONS
-            value: "-javaagent:/skywalking/agent/skywalking-agent.jar -Dskywalking.trace.ignore_path=/eureka/**,SpringScheduled/**,GuavsaCache/**,Jedis/**,PostgreSQL/**"
-          - name: SW_AGENT_SAMPLE
-            value: -1
-          - name: SW_AGENT_NAME
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.labels['app']
-          # oap服务地址
-          - name: SW_AGENT_COLLECTOR_BACKEND_SERVICES
-            value: "172.31.18.242:11800"
+            # skywalking 环境变量
+            - name: JAVA_TOOL_OPTIONS
+              value: "-javaagent:/skywalking/agent/skywalking-agent.jar -Dskywalking.trace.ignore_path=/eureka/**,SpringScheduled/**,GuavsaCache/**,Jedis/**,PostgreSQL/**"
+            - name: SW_AGENT_SAMPLE
+              value: -1
+            - name: SW_AGENT_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.labels['app']
+            # oap服务地址
+            - name: SW_AGENT_COLLECTOR_BACKEND_SERVICES
+              value: "172.31.18.242:11800"
         volumes: 
         - name: skywalking-agent
           emptyDir: {}
