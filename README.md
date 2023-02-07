@@ -1,5 +1,21 @@
 # Demo Java Web App
 
+* complie
+    docker build
+    
+* artifacts
+    ali docker images
+    registry.cn-hangzhou.aliyuncs.com
+    registry.cn-hangzhou.aliyuncs.com/mir355/java-demo
+
+    $ docker login --username=mir***@163.com registry.cn-hangzhou.aliyuncs.com
+    $ docker tag [ImageId] registry.cn-hangzhou.aliyuncs.com/mir355/java-demo:[镜像版本号]
+    $ docker push registry.cn-hangzhou.aliyuncs.com/mir355/java-demo:[镜像版本号]
+
+    1qaz2wsx
+
+* k8s deploy
+
 [![BoltOps Badge](https://img.boltops.com/boltops/badges/boltops-badge.png)](https://www.boltops.com)
 
 Simple java project demos how to build a war file to be deployed on a Tomcat server.

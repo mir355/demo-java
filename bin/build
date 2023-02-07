@@ -1,5 +1,6 @@
 #!/bin/bash -exu
-
+token=$1
+tag=$2
 # brew install maven # for macosx
 mvn package # creates target/demo.war
 # Move the artifact into pkg so we do not have to send the whole target file
@@ -9,3 +10,6 @@ mkdir -p pkg
 mv target/demo.war pkg/demo.war
 
 docker build -t demo-java .
+docker login --username=mir355@163.com --password=$token registry.cn-hangzhou.aliyuncs.com
+docker tag demo-java registry.cn-hangzhou.aliyuncs.com/mir355/java-demo:$tag
+docker push registry.cn-hangzhou.aliyuncs.com/mir355/java-demo:$tag

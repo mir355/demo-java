@@ -1,0 +1,41 @@
+name: deploy #名字
+ 
+on: [push]  #触发事件
+jobs:
+  build:
+    runs-on: ubuntu-latest #分配的服务器系统
+    steps:
+    - uses: actions/checkout@v1 #执行一个checkout@v1 脚本
+    # - name: build docker
+    #   run: |
+    #     wget https://dl.k8s.io/v1.6.0/kubernetes-client-linux-amd64.tar.gz
+    #     tar -xzvf kubernetes-client-linux-amd64.tar.gz
+    #     mv kubernetes/client/bin/kubectl .
+    #     chmod a+x /usr/bin/kube*
+
+    - name: deploy to cluster
+      uses: steebchen/kubectl@master #执行一个setup-dotnet@v1 脚    
+    - name: ConnectionKubeCtl #连接到k8s集群
+      run: |
+        # 配置登录方式 这里我使用的是token登录 通过kubectl describe secrets -n kube-system $(kubectl -n kube-system get secret | awk '/dashboard-admin/{print $1}') 命令可以查看一条
+        kubectl config set-cluster tf-cluster --insecure-skip-tls-verify=true --server=${{ secrets.k8s_server }} #配置连接地址
+        kubectl config set-credentials default --token=${{ secrets.k8s_token }} 
+        kubectl config set-context tf-system --cluster=tf-cluster --user=default
+        kubectl config use-context tf-system
+        bash bin/build ${{ secrets.acr_token }} ${{ github.run_id }}
+
+    - name: Kube Deployment Update Image #通知k8s 更新镜像版本并产生一个记录
+      run: |
+        # 先更新镜像
+        result=`kubectl set image deployment java-demo *=registry.cn-hangzhou.aliyuncs.com/mir355/java-demo:${{ github.run_id }} -n default`
+        # 检测镜像是否更新成功
+        if [[ "$(echo $result | grep updated)" != ""  ]]; then
+          # 镜像地址更新了，会自动重新部署
+            echo 'UPDATED'
+        else
+          kubectl apply -f java-demo-svc.yaml
+          # 镜像地址与之前相同，需要触发重新部署
+          kubectl apply -f java-demo.yaml
+          echo 'NOT UPDATE'
+          kubectl rollout restart deployment java-demo -n default
+        fi
