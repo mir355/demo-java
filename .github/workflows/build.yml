@@ -26,7 +26,8 @@ jobs:
 
     - name: Kube Deployment Update Image #通知k8s 更新镜像版本并产生一个记录
       run: |
-        sed -i "s#mir355/java-demo.*#mir355/java-demo:${{ github.run_id }}#" java-demo.yaml
+        sed -i "s#mir355/java-demo.*#mir355/java-demo:${{ github.run_id }}'#" java-demo.yaml
+        cat java-demo.yaml
         kubectl apply -f java-demo-svc.yaml
         # 镜像地址与之前相同，需要触发重新部署
         kubectl apply -f java-demo.yaml
